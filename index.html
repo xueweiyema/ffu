@@ -1,0 +1,89 @@
+<link rel="stylesheet" href="./assets/pure/pure-min.css" type="text/css" media="screen">
+<style>
+    body {
+        font-family: system, -apple-system, '.SFNSText-Regular', 'SF UI Text', 'Lucida Grande', 'Segoe UI', Ubuntu, Cantarell, sans-serif;
+        color: #fff;
+        background-color: #8aba87;
+    }
+    
+    section {
+        padding: 5px;
+        margin: 5px;
+        position: absolute;
+    }
+    
+    #close {
+        color: white;
+        opacity: 0.7;
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 20px;
+        text-decoration: none;
+    }
+</style>
+
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>filter for unique from EXCEL</title>
+</head>
+
+<body>
+    <a id="close" href="javascript:window.close()">Close this Window</a>
+    <section>
+        <button id="oef" class="pure-button pure-button-primary" href="#">OPEN EXCEL FILES</button>&nbsp;<span id="selected-file"></span>
+
+        <form class="pure-form">
+            <fieldset>
+                <legend>A compact inline form</legend>
+
+                <input type="email" placeholder="Email">
+                <input type="password" placeholder="Password">
+
+                <label for="remember">
+            <input id="remember" type="checkbox"> Remember me
+        </label>
+
+                <button type="submit" class="pure-button pure-button-primary">Sign in</button>
+            </fieldset>
+        </form>
+
+
+        <p><span id="file-result"></span></p>
+    </section>
+    <!--We are using node
+    
+    <script>
+        document.write(process.versions.node)
+    </script>, Chrome
+    <script>
+        document.write(process.versions.chrome)
+    </script>, and Electron
+    <script>
+        document.write(process.versions.electron)
+    </script>-->
+
+</body>
+
+</html>
+
+<script>
+    const ipc = require('electron').ipcRenderer
+
+    const selectDirBtn = document.getElementById('oef')
+
+    selectDirBtn.addEventListener('click', function (event) {
+        ipc.send('open-file-dialog')
+    })
+
+    ipc.on('selected-directory', function (event, path) {
+        document.getElementById('selected-file').innerHTML = `You selected: ${path}`
+    })
+
+    ipc.on('result', function (event, result) {
+        document.getElementById('file-result').innerHTML = `${result}`
+    })
+</script>

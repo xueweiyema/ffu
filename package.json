@@ -1,0 +1,19 @@
+{
+  "name": "ffu",
+  "version": "1.0.0",
+  "description": "filter for unique from EXCEL",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "asni",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^1.6.2",
+    "xlsx": "^0.9.2"
+  },
+  "dependencies": {
+    "electron": "^1.6.2",
+    "xlsx": "^0.9.2"
+  }
+}
