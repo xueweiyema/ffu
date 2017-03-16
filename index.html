@@ -7,6 +7,7 @@
     }
     
     section {
+        color: black;
         padding: 5px;
         margin: 5px;
         position: absolute;
@@ -38,16 +39,14 @@
 
         <form class="pure-form">
             <fieldset>
-                <legend>A compact inline form</legend>
-
-                <input type="email" placeholder="Email">
-                <input type="password" placeholder="Password">
-
-                <label for="remember">
-            <input id="remember" type="checkbox"> Remember me
-        </label>
-
-                <button type="submit" class="pure-button pure-button-primary">Sign in</button>
+                <legend>Number of times</legend>
+                <select id="state">
+            <option>=</option>
+            <option>></option>
+            <option><</option>
+        </select>
+                <input type="text" placeholder="Times input here">
+                <button type="submit" class="pure-button pure-button-primary">Filter</button>
             </fieldset>
         </form>
 
