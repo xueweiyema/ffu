@@ -36,21 +36,18 @@
     <a id="close" href="javascript:window.close()">Close this Window</a>
     <section>
         <button id="oef" class="pure-button pure-button-primary" href="#">OPEN EXCEL FILES</button>&nbsp;<span id="selected-file"></span>
-
-        <form class="pure-form">
+        <div class="pure-form">
             <fieldset>
                 <legend>Number of times</legend>
-                <select id="state">
+                <select id="symbol">
             <option value="0">=</option>
-            <option value="1"></option>
+            <option value="1">></option>
             <option value="2"><</option>
         </select>
-                <input type="text" placeholder="Times input here">
-                <button type="submit" class="pure-button pure-button-primary">Filter</button>
+                <input id='times' type="text" placeholder="Times input here" onchange="if(/\D/.test(this.value)){alert('Only Input Number');this.value='';}">
+                <button id="filterBtn" class="pure-button pure-button-primary">Filter</button>
             </fieldset>
-        </form>
-
-
+        </div>
         <p><span id="file-result"></span></p>
     </section>
     <!--We are using node
@@ -70,19 +67,5 @@
 </html>
 
 <script>
-    const ipc = require('electron').ipcRenderer
-
-    const selectDirBtn = document.getElementById('oef')
-
-    selectDirBtn.addEventListener('click', function (event) {
-        ipc.send('open-file-dialog')
-    })
-
-    ipc.on('selected-directory', function (event, path) {
-        document.getElementById('selected-file').innerHTML = `You selected: ${path}`
-    })
-
-    ipc.on('result', function (event, result) {
-        document.getElementById('file-result').innerHTML = `${result}`
-    })
+    require('./render/filter_handler')
 </script>

@@ -240,10 +240,6 @@ if (process.platform === 'win32') {
     addUpdateMenuItems(helpMenu, 0)
 }
 
-
-
-
-
 app.on('ready', () => {
     const menu = Menu.buildFromTemplate(template)
     Menu.setApplicationMenu(menu)
@@ -266,7 +262,6 @@ app.on('ready', () => {
         console.log('close')
     })
 
-
     ipcMain.on('open-file-dialog', function (event) {
         dialog.showOpenDialog({
             filters: [{
@@ -282,6 +277,13 @@ app.on('ready', () => {
         })
     })
 
+    ipcMain.on('click-filterBtn', function (event, symbol, times) {
+        console.log('Symbol=' + symbol + ' times=' + times)
+        if (times == '' || symbol == '') {} else {
+            event.sender.send('result', filter(result, symbol, times))
+        }
+    })
+
 })
 
 app.on('browser-window-created', function () {
@@ -294,14 +296,43 @@ app.on('browser-window-created', function () {
 //     if (reopenMenuItem) reopenMenuItem.enabled = true
 // })
 
+let result = new Array()
+
+function arrTo2arr(array) {
+    let arr1 = new Array()
+    let arr2 = new Array()
+    let num = 1
+    let temp = ""
+    let size = array.length
+    for (let i = 0; i < size; i++) {
+        for (let j = i + 1; j < size; j++) {
+            if (array[i] == array[j]) {
+                temp = array[j]
+                array[j] = array[size - 1]
+                array[size - 1] = temp
+                size--
+                j--
+                num++
+            }
+        }
+        arr1[i] = num
+        num = 1
+        arr2[i] = array[i]
+    }
+    return {
+        arr1: arr1,
+        arr2: arr2
+    }
+}
+
 function handle(files) {
-    let result = new Array()
+    result = new Array()
     for (let f of files) {
         let workbook = xlsx.readFile(f);
-        var sheet_name_list = workbook.SheetNames;
+        let sheet_name_list = workbook.SheetNames;
         sheet_name_list.forEach(function (y) { /* iterate through sheets */
-            var worksheet = workbook.Sheets[y];
-            for (var z in worksheet) {
+            let worksheet = workbook.Sheets[y];
+            for (let z in worksheet) {
                 /* all keys that do not begin with "!" correspond to cell addresses */
                 if (z[0] === '!') continue;
                 result.push(worksheet[z].v)
@@ -310,59 +341,55 @@ function handle(files) {
         });
     }
     // return Array.from(new Set(result))
-    return repeatNumber(result)
+    return repeatArr(result)
 }
 
-function repeatNumber(array) {
-
-    let arr = new Array();
-
-    let test = new Array();
-
-    let num = 1;
-
-    let temp = "";
-
-    let size = array.length;
-
-    console.log("-----------------------------" + size)
-
-    for (let i = 0; i < size; i++) {
-
-        for (let j = i + 1; j < size; j++) {
-
-            if (array[i] == array[j]) {
-
-                temp = array[j]
-
-                array[j] = array[size - 1]
-
-                array[size - 1] = temp
-
-                size--
-
-                j--
-
-                num++
-            }
-
-        }
-        test[i] = num
-        num = 1
-        arr[i] = array[i]
-    }
+//filter by t
+function filter(array, symbol, t) {
+    let {
+        arr1,
+        arr2
+    } = arrTo2arr(array)
     let s = ''
-    let max = test.reduce((x, y) => (x > y) ? x : y)
-    let ts = Array.from(new Set(test))
-    ts.sort().reverse()
-    for (var t of ts) {
-        s += t + ':'
-        for (let i = 0; i < arr.length; i++) {
+    for (let i = 0; i < arr2.length; i++) {
+        switch (symbol) {
+            case '1': //>
+                if (arr1[i] > t) {
+                    s += arr2[i] + ','
+                }
+                break;
+            case '2': //<
+                if (arr1[i] < t) {
+                    s += arr2[i] + ','
+                }
+                break;
+            default: //=
+                if (arr1[i] == t) {
+                    s += arr2[i] + ','
+                }
+        }
+    }
+    s += '</br>'
+    return s
+}
 
-            if (test[i] == t) {
-                s += arr[i] + ','
+function repeatArr(array) {
+
+    let {
+        arr1,
+        arr2
+    } = arrTo2arr(array)
+    let s = ''
+    let max = arr2.reduce((x, y) => (x > y) ? x : y)
+    let ts = Array.from(new Set(arr1))
+    ts.sort().reverse()
+    for (let t of ts) {
+        s += t + ':'
+        for (let i = 0; i < arr2.length; i++) {
+            if (arr1[i] == t) {
+                s += arr2[i] + ','
             }
-            console.log("----------------------element:" + arr[i] + "\t\t repeat number:" + test[i] + ',')
+            console.log("----------------------element:" + arr1[i] + " repeat number:" + arr2[i] + ',')
         }
         s += '</br>'
     }
