@@ -28,5 +28,6 @@ ipc.on('result', (event, result) => {
 })
 
 filterBtn.addEventListener('click', (event) => {
+    document.getElementById("overlay").style.visibility="visible";
     ipc.send('click-filterBtn', symbol.value, times.value)
 })

@@ -1,4 +1,7 @@
 <link rel="stylesheet" href="./assets/pure/pure-min.css" type="text/css" media="screen">
+<link rel="stylesheet" href="./assets/csspin-bubble.css" type="text/css" media="screen">
+<link rel="stylesheet" href="./assets/overlay.css" type="text/css" media="screen">
+
 <style>
     body {
         font-family: system, -apple-system, '.SFNSText-Regular', 'SF UI Text', 'Lucida Grande', 'Segoe UI', Ubuntu, Cantarell, sans-serif;
@@ -34,7 +37,7 @@
 
 <body>
     <a id="close" href="javascript:window.close()">Close this Window</a>
-    <section>
+    <section  class="lower">
         <button id="oef" class="pure-button pure-button-primary" href="#">OPEN EXCEL FILES</button>&nbsp;<span id="selected-file"></span>
         <div class="pure-form">
             <fieldset>
@@ -61,6 +64,9 @@
     <script>
         document.write(process.versions.electron)
     </script>-->
+    <div id="overlay" class="overlay hidden-overlay-hugeinc">
+        <div id="spinner" class="cp-spinner cp-bubble"></div>
+    </div>
 
 </body>
 

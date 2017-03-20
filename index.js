@@ -139,6 +139,13 @@ let template = [{
     }]
 }]
 
+setTimeout(function () {
+    var delay = Date.now() - timeoutScheduled;
+    console.log(delay + "ms have passed since I was scheduled");
+}, 2000);
+
+
+
 function addUpdateMenuItems(items, position) {
     if (process.mas) return
 
@@ -240,6 +247,20 @@ if (process.platform === 'win32') {
     addUpdateMenuItems(helpMenu, 0)
 }
 
+app.on('browser-window-created', function () {
+    let reopenMenuItem = findReopenMenuItem()
+    if (reopenMenuItem) reopenMenuItem.enabled = false
+})
+
+// app.on('window-all-closed', function () {
+//     let reopenMenuItem = findReopenMenuItem()
+//     if (reopenMenuItem) reopenMenuItem.enabled = true
+// })
+
+let timeoutScheduled = Date.now();
+
+
+
 app.on('ready', () => {
     const menu = Menu.buildFromTemplate(template)
     Menu.setApplicationMenu(menu)
@@ -271,8 +292,11 @@ app.on('ready', () => {
             properties: ['multiSelections']
         }, function (files) {
             if (files) {
-                event.sender.send('selected-directory', files)
-                event.sender.send('result', handle(files))
+                //Thread
+                setImmediate(() => {
+                    event.sender.send('selected-directory', files)
+                    event.sender.send('result', handle(files))
+                });
             }
         })
     })
@@ -286,15 +310,7 @@ app.on('ready', () => {
 
 })
 
-app.on('browser-window-created', function () {
-    let reopenMenuItem = findReopenMenuItem()
-    if (reopenMenuItem) reopenMenuItem.enabled = false
-})
 
-// app.on('window-all-closed', function () {
-//     let reopenMenuItem = findReopenMenuItem()
-//     if (reopenMenuItem) reopenMenuItem.enabled = true
-// })
 
 let result = new Array()
 
@@ -374,7 +390,6 @@ function filter(array, symbol, t) {
 }
 
 function repeatArr(array) {
-
     let {
         arr1,
         arr2
