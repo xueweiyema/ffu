@@ -139,12 +139,6 @@ let template = [{
     }]
 }]
 
-setTimeout(function () {
-    var delay = Date.now() - timeoutScheduled;
-    console.log(delay + "ms have passed since I was scheduled");
-}, 2000);
-
-
 
 function addUpdateMenuItems(items, position) {
     if (process.mas) return
@@ -259,8 +253,6 @@ app.on('browser-window-created', function () {
 
 let timeoutScheduled = Date.now();
 
-
-
 app.on('ready', () => {
     const menu = Menu.buildFromTemplate(template)
     Menu.setApplicationMenu(menu)
@@ -296,7 +288,7 @@ app.on('ready', () => {
                 setImmediate(() => {
                     event.sender.send('selected-directory', files)
                     event.sender.send('result', handle(files))
-                });
+                })
             }
         })
     })
@@ -304,7 +296,9 @@ app.on('ready', () => {
     ipcMain.on('click-filterBtn', function (event, symbol, times) {
         console.log('Symbol=' + symbol + ' times=' + times)
         if (times == '' || symbol == '') {} else {
-            event.sender.send('result', filter(result, symbol, times))
+            setImmediate(() => {
+                event.sender.send('result', filter(result, symbol, times))
+            })
         }
     })
 

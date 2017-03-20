@@ -24,10 +24,15 @@ ipc.on('result', (event, result) => {
     if (result != null) {
         filterBtn.disabled = false
         times.disabled = false
+        document.getElementById("overlay").className = "overlay hidden-overlay-hugeinc"
     }
 })
 
 filterBtn.addEventListener('click', (event) => {
-    document.getElementById("overlay").style.visibility="visible";
-    ipc.send('click-filterBtn', symbol.value, times.value)
+    if (times.value.trim() == '') {
+        alert('Please input a number')
+    } else {
+        document.getElementById("overlay").className = "overlay overlay-hugeinc"
+        ipc.send('click-filterBtn', symbol.value, times.value)
+    }
 })
