@@ -4,6 +4,7 @@ const xlsx = require('xlsx')
 const os = require('os')
 const url = require('url')
 const path = require('path')
+const fs = require('fs')
 const {
     app,
     BrowserWindow,
@@ -46,66 +47,68 @@ let template = [{
 }, {
     label: 'View',
     submenu: [{
-        label: 'Reload',
-        accelerator: 'CmdOrCtrl+R',
-        click: function (item, focusedWindow) {
-            if (focusedWindow) {
-                // on reload, start fresh and close any old
-                // open secondary windows
-                if (focusedWindow.id === 1) {
-                    BrowserWindow.getAllWindows().forEach(function (win) {
-                        if (win.id > 1) {
-                            win.close()
-                        }
-                    })
+            label: 'Reload',
+            accelerator: 'CmdOrCtrl+R',
+            click: function (item, focusedWindow) {
+                if (focusedWindow) {
+                    // on reload, start fresh and close any old
+                    // open secondary windows
+                    if (focusedWindow.id === 1) {
+                        BrowserWindow.getAllWindows().forEach(function (win) {
+                            if (win.id > 1) {
+                                win.close()
+                            }
+                        })
+                    }
+                    focusedWindow.reload()
                 }
-                focusedWindow.reload()
             }
-        }
-    }, {
-        label: 'Toggle Full Screen',
-        accelerator: (function () {
-            if (process.platform === 'darwin') {
-                return 'Ctrl+Command+F'
-            } else {
-                return 'F11'
-            }
-        })(),
-        click: function (item, focusedWindow) {
-            if (focusedWindow) {
-                focusedWindow.setFullScreen(!focusedWindow.isFullScreen())
-            }
-        }
-    }, {
-        label: 'Toggle Developer Tools',
-        accelerator: (function () {
-            if (process.platform === 'darwin') {
-                return 'Alt+Command+I'
-            } else {
-                return 'Ctrl+Shift+I'
-            }
-        })(),
-        click: function (item, focusedWindow) {
-            if (focusedWindow) {
-                focusedWindow.toggleDevTools()
-            }
-        }
-    }, {
-        type: 'separator'
-    }, {
-        label: 'App Menu Demo',
-        click: function (item, focusedWindow) {
-            if (focusedWindow) {
-                const options = {
-                    type: 'info',
-                    title: 'Application Menu Demo',
-                    buttons: ['Ok'],
-                    message: 'This demo is for the Menu section, showing how to create a clickable menu item in the application menu.'
+        }, {
+            label: 'Toggle Full Screen',
+            accelerator: (function () {
+                if (process.platform === 'darwin') {
+                    return 'Ctrl+Command+F'
+                } else {
+                    return 'F11'
                 }
-                electron.dialog.showMessageBox(focusedWindow, options, function () {})
+            })(),
+            click: function (item, focusedWindow) {
+                if (focusedWindow) {
+                    focusedWindow.setFullScreen(!focusedWindow.isFullScreen())
+                }
             }
+        }, {
+            label: 'Toggle Developer Tools',
+            accelerator: (function () {
+                if (process.platform === 'darwin') {
+                    return 'Alt+Command+I'
+                } else {
+                    return 'Ctrl+Shift+I'
+                }
+            })(),
+            click: function (item, focusedWindow) {
+                if (focusedWindow) {
+                    focusedWindow.toggleDevTools()
+                }
+            }
+        }, {
+            type: 'separator'
         }
-    }]
+        // , {
+        //     label: 'App Menu Demo',
+        //     click: function (item, focusedWindow) {
+        //         if (focusedWindow) {
+        //             const options = {
+        //                 type: 'info',
+        //                 title: 'Application Menu Demo',
+        //                 buttons: ['Ok'],
+        //                 message: 'This demo is for the Menu section, showing how to create a clickable menu item in the application menu.'
+        //             }
+        //             electron.dialog.showMessageBox(focusedWindow, options, function () {})
+        //         }
+        //     }
+        // }
+    ]
 }, {
     label: 'Window',
     role: 'window',
@@ -132,11 +135,26 @@ let template = [{
     label: 'Help',
     role: 'help',
     submenu: [{
-        label: 'Learn More',
-        click: function () {
-            electron.shell.openExternal('http://electron.atom.io')
+            label: 'About',
+            click: function (item, focusedWindow) {
+                if (focusedWindow) {
+                    const options = {
+                        type: 'info',
+                        title: 'filter for unique from EXCEL',
+                        buttons: ['Ok'],
+                        message: 'programmed by 野马VC'
+                    }
+                    electron.dialog.showMessageBox(focusedWindow, options, function () {})
+                }
+            }
         }
-    }]
+        // , {
+        //     label: 'Learn More',
+        //     click: function () {
+        //         electron.shell.openExternal('http://electron.atom.io')
+        //     }
+        // }
+    ]
 }]
 
 
@@ -289,6 +307,8 @@ app.on('ready', () => {
                     event.sender.send('selected-directory', files)
                     event.sender.send('result', handle(files))
                 })
+            } else {
+                event.sender.send('dismissed', 'dismissed')
             }
         })
     })
@@ -300,6 +320,29 @@ app.on('ready', () => {
                 event.sender.send('result', filter(result, symbol, times))
             })
         }
+    })
+
+    ipcMain.on('save-file-dialog', function (event, r) {
+        dialog.showSaveDialog({
+            title: 'ffuOut',
+            filters: [{
+                name: 'Normal text file',
+                extensions: ['txt']
+            }]
+        }, function (file) {
+            if (file) {
+                //Thread
+                setImmediate(() => {
+                    fs.writeFile(file, r.replace(/<\/br>/g, "\r\n"), (err) => {
+                        if (err) throw err;
+                        console.log('It\'s saved!');
+                    })
+                    event.sender.send('dismissed', 'dismissed')
+                })
+            } else {
+                event.sender.send('dismissed', 'dismissed')
+            }
+        })
     })
 
 })

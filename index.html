@@ -8,14 +8,14 @@
         color: #fff;
         background-color: #8aba87;
     }
-    
+
     section {
         color: black;
         padding: 5px;
         margin: 5px;
         position: absolute;
     }
-    
+
     #close {
         color: white;
         opacity: 0.7;
@@ -37,7 +37,7 @@
 
 <body>
     <a id="close" href="javascript:window.close()">Close this Window</a>
-    <section  class="lower">
+    <section class="lower">
         <button id="oef" class="pure-button pure-button-primary" href="#">OPEN EXCEL FILES</button>&nbsp;<span id="selected-file"></span>
         <div class="pure-form">
             <fieldset>
@@ -49,6 +49,7 @@
         </select>
                 <input id='times' type="text" placeholder="Times input here" onchange="if(/\D/.test(this.value)){alert('Only Input Number');this.value='';}">
                 <button id="filterBtn" class="pure-button pure-button-primary">Filter</button>
+                <button id="saveBtn" class="pure-button pure-button-primary">Save</button>
             </fieldset>
         </div>
         <p><span id="file-result"></span></p>
