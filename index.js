@@ -345,6 +345,29 @@ app.on('ready', () => {
         })
     })
 
+    ipcMain.on('save-excel-dialog', function (event, r) {
+        dialog.showSaveDialog({
+            title: 'ffuOut',
+            filters: [{
+                name: 'Normal text file',
+                extensions: ['txt']
+            }]
+        }, function (file) {
+            if (file) {
+                //Thread
+                setImmediate(() => {
+                    fs.writeFile(file, r.replace(/<\/br>/g, "\r\n"), (err) => {
+                        if (err) throw err;
+                        console.log('It\'s saved!');
+                    })
+                    event.sender.send('dismissed', 'dismissed')
+                })
+            } else {
+                event.sender.send('dismissed', 'dismissed')
+            }
+        })
+    })
+
 })
 
 
