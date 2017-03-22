@@ -349,8 +349,8 @@ app.on('ready', () => {
         dialog.showSaveDialog({
             title: 'ffuOut',
             filters: [{
-                name: 'Normal text file',
-                extensions: ['txt']
+                name: 'Excel',
+                extensions: ['xls']
             }]
         }, function (file) {
             if (file) {
@@ -370,7 +370,12 @@ app.on('ready', () => {
 
 })
 
+function stringToExcel(r) {
+    let arr1 = r.split("</br>")
+    let workbook = new workbook();
 
+
+}
 
 let result = new Array()
 
