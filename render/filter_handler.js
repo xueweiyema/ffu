@@ -45,6 +45,12 @@ ipc.on('dismissed', (event, dismissed) => {
     }
 })
 
+ipc.on('error', (event, e) => {
+    if (e != null) {
+        alert(e);
+    }
+})
+
 filterBtn.addEventListener('click', (event) => {
     if (times.value.trim() == '') {
         alert('Please input a number')
